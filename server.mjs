@@ -10,16 +10,21 @@
 // import Express (build on top of Node)
 import express from 'express';
 
-// create an instance of express()
+// create an instance of express() & cache it to "app" variable
 const app = express();
 const PORT = 3000;
+
+app.get('/', (req, res) => {
+    res.send('Hello from the other side?');
+});
+
 
 /* app.listen() should always be the very last thing in the server - 
 although dealing w/ asynchronous JS but sequencing still mattter */
 app.listen(PORT, () => {
     // console.log() w/ some string interpolation 
-    console.log(`Server is runnning on PORT #:${PORT}`);
+    console.log(`Server is runnning on PORT: ${PORT}`);
 });
 /* after importing Express, initializing Express to be contained in a variable "app", and
 incorporating app.listen() at the very end, we had essentially established an Express server */
-// "npm start" in CLI & "localhost.com/{PORT} in browser to check"
+// "npm start" in CLI & "localhost.com/{PORT}" in browser to check"
