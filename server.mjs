@@ -12,7 +12,7 @@ import express from 'express';
 // import router module into app
 import song_routes from './routes/song_routes.mjs';
 
-// import morgan 3rd party middleware
+// import morgan 3rd party middleware ("express.logger" built-in fn DN work)
 import morgan from 'morgan';
 
 // create an instance of express() & cache it to "app" variable
@@ -23,8 +23,17 @@ const PORT = 3000;
 // middleware functions -- within HTTP request method b/t path URL & route handler
 // https://expressjs.com/en/resources/middleware.html
 // https://expressjs.com/en/4x/api.html#app.METHOD
+// https://retrodevs.medium.com/express-js-logger-middleware-a-quick-and-easy-guide-6b79a14ea164
 
-// built on top of Node.js (like Express), Morgan is a popular HTTP request logger
+// custom middleware logging info & when HTTP request was made
+app.use((req,res,next) =>{
+    req.time = new Date(Date.now()).toString();
+    // print out to terminal
+    console.log(req.method,req.hostname, req.path, req.time);
+    next(); // necessary to invoke next() to move towards next handler function, otw it ends here
+});
+
+// built on top of Node.js (like Express), Morgan API console.log() out HTTP requests onto terminal
 app.use(morgan('combined'));
 
 // error handling middleware using industry standard anonymous arrow function
@@ -34,6 +43,7 @@ app.use((err, req, res, next) => {
     /* here we created a custom error code 600 w/ message if it hits */
     res.status(600).send(`It's bwoken, it's bwoken!`);
 });
+
 
 // Express routes' structure
 /* instance.method(URL path on server, handler function to execute when route is matched) */
@@ -101,7 +111,7 @@ app.use('/song_routes', song_routes);
 although dealing w/ asynchronous JS but sequencing still mattter */
 app.listen(PORT, () => {
     // console.log() w/ some string interpolation 
-    console.log(`Server is runnning on PORT: ${PORT}`);
+    console.log(`Server is runnning on http://localhost:${PORT}`);
 });
 
 /* after importing Express, initializing Express to be contained in a variable "app", and
