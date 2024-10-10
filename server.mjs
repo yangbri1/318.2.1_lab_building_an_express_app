@@ -17,6 +17,16 @@ const app = express();
 const PORT = 3000;
 
 
+// middleware functions -- within HTTP request method b/t path URL & route handler
+// https://expressjs.com/en/resources/middleware.html
+// https://expressjs.com/en/4x/api.html#app.METHOD
+// error handling middleware using industry standard anonymous arrow function
+app.use((err, req, res, next) => {
+    console.log(err.stack);
+    // res.status(600).send(err.message);
+    /* here we created a custom error code 600 w/ message if it hits */
+    res.status(600).send(`It's bwoken, it's bwoken!`);
+});
 
 // Express routes' structure
 /* instance.method(URL path on server, handler function to execute when route is matched) */

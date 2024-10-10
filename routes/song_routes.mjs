@@ -1,6 +1,9 @@
 /* modular router file */
 import express from 'express';
+// initialize running version of express.Router() into variable router
 const router = express.Router();
+
+/* middleware could be included here but it will only be specific to this router */
 
 
 // define /gotham route path
