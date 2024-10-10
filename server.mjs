@@ -5,16 +5,21 @@
 // 4. npm i express - download express 
 // 5. import express at top of page
 // 6. initialize express into a variable
-// 7. listen to express(app)
+// 7. listen to express(app) at the BOTTOM of the page
 
 // import Express (build on top of Node)
 import express from 'express';
+// import router module into app
+import song_routes from './routes/song_routes.mjs';
 
 // create an instance of express() & cache it to "app" variable
 const app = express();
 const PORT = 3000;
 
-// route methods 
+
+
+// Express routes' structure
+/* instance.method(URL path on server, handler function to execute when route is matched) */
 
 // when user makes GET request to root/homepage
 app.get('/', (req, res) => {
@@ -30,22 +35,50 @@ app.get('/about', function (req, res) {
 // any number of string literals could be b/t "secr" & "et" and it will run, also "tea" is optional
 app.get('/secr*et(tea)?', (req, res) => {
     res.send(`In da club`);
-})
+});
 
 // Note: string patterns does INDEED work w/ lengthened path (rightmost, on endpoint)
 //       string patterns does NOT work in conjunction w/ route parameters itself
-// path needs to be '/secret/{team}/{player} format
-app.get('/secr*et(tea)?/:team/:player/', (req, res) => {
+// path needs to be '/secret/{map}/{race} format
+app.get('/secr*et(tea)?/:map/:race/', (req, res) => {
     // res.send(req.params); // req.params is an obj
-    // access multiple params using 'req.params' & dynamically reflect it on content body
-    res.send(`You've found me ${req.params.player}, you've found me ${req.params.team}`);
+    // access multiple params using 'req.params' & dynamically reflect values cached in req.params obj
+    res.send(`You've selected ${req.params.race} on the ${req.params.map} map.`);
     // res.send(`hello now`);
-})
+});
+
+// GET request for attempting to navigate towards any child path of /about ...
+app.get('/about/*', (req, res, next) => {
+    console.log('This prints out in the terminal')
+    next() // invoking next() object will point to the next callback function
+}, (req, res) => {
+    // res.send('Come again?');
+    // route .redirect() method back to URL path /about
+    res.redirect('/about');
+});
 
 // GET request to any other page ...
-app.get('*', (req, res) => {
+app.get('*', function (req, res) {
     res.send(`<h1>404 Error</h1> \nNothing to see here`);
 });
+
+// app.route('/character')
+//     .get((req, res) => {
+//         res.send('/character route path');
+//     })
+//     .post((req, res) => {
+//         res.send('Add new character');
+//     })
+//     .put((req, res) => {
+//         res.send('Update the character');
+//     })
+//     .delete((req, res) => {
+//         res.send('Delete the character');
+//     });
+
+/* app.route()'s placement normally here unless in another module ... also chainable */
+// load router module in app  -- now can handle requests to /secret and /secret/about
+app.use('/song_routes', song_routes);
 
 /* app.listen() should always be the very last thing in the server - 
 although dealing w/ asynchronous JS but sequencing still mattter */
