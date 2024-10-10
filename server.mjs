@@ -12,12 +12,43 @@ import express from 'express';
 // import router module into app
 import song_routes from './routes/song_routes.mjs';
 
+
 // import morgan 3rd party middleware ("express.logger" built-in fn DN work)
 import morgan from 'morgan';
+
+// import filesystem module (built-in Node module) into main app file -- used in creating a template engine
+import fs from 'fs';
 
 // create an instance of express() & cache it to "app" variable
 const app = express();
 const PORT = 3000;
+
+/* FINAL STEP IN TEMPLATE ENGINE:  */
+app.use(express.static('./styles'));
+
+// creating template engine (BOILERPALTE w/o replace block) -- accessing w/ extension of "sbinalla"
+app.engine('sbinalla', (filePath, options, callback) => {
+    fs.readFile(filePath, (err, content) => {
+        // error handling if there's any error execute callback function
+        if (err) return callback(err);
+
+        // takes template, convert to string, fill in selected portions w/ inputted content (dynamic), returns value
+        const rendered = content
+            .toString()
+            .replaceAll('#title#', `${options.name}`)
+            .replace('#description#', `${options.description}`)
+            .replace('#summary#', `${options.summary}`)
+            .replace('#img', `${options.img}`);
+
+        
+        return callback(null, rendered);
+
+    });
+});
+
+// Express .set() method -- necessary intermediary in template engine step
+app.set("views", "./views");    // specifies the file "views" to path "./views" (directory where view template exist)
+app.set("view engine", "sbinalla"); // registers above newly created "view engine" /w "sbinalla" extension
 
 
 // middleware functions -- within HTTP request method b/t path URL & route handler
@@ -26,7 +57,7 @@ const PORT = 3000;
 // https://retrodevs.medium.com/express-js-logger-middleware-a-quick-and-easy-guide-6b79a14ea164
 
 // custom middleware logging info & when HTTP request was made
-app.use((req,res,next) =>{
+app.use((req, res, next) =>{
     req.time = new Date(Date.now()).toString();
     // print out to terminal
     console.log(req.method,req.hostname, req.path, req.time);
@@ -37,6 +68,7 @@ app.use((req,res,next) =>{
 app.use(morgan('combined'));
 
 // error handling middleware using industry standard anonymous arrow function
+/* Note: error handling middleware has 4 params that ALL needs to be filled w/ something */
 app.use((err, req, res, next) => {
     console.log(err.stack);
     // res.status(600).send(err.message);
@@ -45,14 +77,26 @@ app.use((err, req, res, next) => {
 });
 
 
-// Express routes' structure
+// Express routes' structure -- most to least specific in route order
 /* instance.method(URL path on server, handler function to execute when route is matched) */
 
 // when user makes GET request to root/homepage
 app.get('/', (req, res) => {
     // shows this message
-    res.send('Hello from the other side...');
+    // res.send('Hello from the other side...');
+
+    // specify the options
+    let options = {
+        name: '\tDark Knight',
+        description: 'Vigilante',
+        summary: 'Protector of Gotham City, fights against evil and strikes fear into hearts of criminals ...',
+        img: 'https://i.pinimg.com/736x/be/02/b4/be02b43e91eba5f496a83e065336f26f.jpg'
+    };
+
+    /* IMPORTANT: call res.render() in EACH of app's routes so view could be rendered */
+    res.render('template', options);
 });
+
 // GET method route -- request to /about page ...
 app.get('/about', function (req, res) {
     res.send(`Don't forget about us...`);
