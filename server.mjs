@@ -21,13 +21,29 @@ app.get('/', (req, res) => {
     // shows this message
     res.send('Hello from the other side...');
 });
-// GET request to /about page ...
-app.get('/about', (req, res) => {
+// GET method route -- request to /about page ...
+app.get('/about', function (req, res) {
     res.send(`Don't forget about us...`);
 });
+
+// route path matching requests to /secret page ... (w/ some regex)
+// any number of string literals could be b/t "secr" & "et" and it will run, also "tea" is optional
+app.get('/secr*et(tea)?', (req, res) => {
+    res.send(`In da club`);
+})
+
+// Note: string patterns neither work w/ lengthened path nor route parameters it seems
+// path needs to be '/secret/{team}/{player} format
+app.get('/sec*ret(tea)?/team/player/', (req, res) => {
+    // res.send(req.params); // req.params is an obj
+    // access multiple params using 'req.params' & dynamically reflect it on content body
+    // res.send(`You've found me ${req.params.player}, you've found me ${req.params.team}`);
+    res.send(`hello now`);
+})
+
 // GET request to any other page ...
 app.get('*', (req, res) => {
-    res.send(`404 Error: Nothing to see here`);
+    res.send(`<h1>404 Error</h1> \nNothing to see here`);
 });
 
 /* app.listen() should always be the very last thing in the server - 
