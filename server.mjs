@@ -32,13 +32,14 @@ app.get('/secr*et(tea)?', (req, res) => {
     res.send(`In da club`);
 })
 
-// Note: string patterns neither work w/ lengthened path nor route parameters it seems
+// Note: string patterns does INDEED work w/ lengthened path (rightmost, on endpoint)
+//       string patterns does NOT work in conjunction w/ route parameters itself
 // path needs to be '/secret/{team}/{player} format
-app.get('/sec*ret(tea)?/team/player/', (req, res) => {
+app.get('/secr*et(tea)?/:team/:player/', (req, res) => {
     // res.send(req.params); // req.params is an obj
     // access multiple params using 'req.params' & dynamically reflect it on content body
-    // res.send(`You've found me ${req.params.player}, you've found me ${req.params.team}`);
-    res.send(`hello now`);
+    res.send(`You've found me ${req.params.player}, you've found me ${req.params.team}`);
+    // res.send(`hello now`);
 })
 
 // GET request to any other page ...
