@@ -12,6 +12,9 @@ import express from 'express';
 // import router module into app
 import song_routes from './routes/song_routes.mjs';
 
+// import morgan 3rd party middleware
+import morgan from 'morgan';
+
 // create an instance of express() & cache it to "app" variable
 const app = express();
 const PORT = 3000;
@@ -20,6 +23,10 @@ const PORT = 3000;
 // middleware functions -- within HTTP request method b/t path URL & route handler
 // https://expressjs.com/en/resources/middleware.html
 // https://expressjs.com/en/4x/api.html#app.METHOD
+
+// built on top of Node.js (like Express), Morgan is a popular HTTP request logger
+app.use(morgan('combined'));
+
 // error handling middleware using industry standard anonymous arrow function
 app.use((err, req, res, next) => {
     console.log(err.stack);
